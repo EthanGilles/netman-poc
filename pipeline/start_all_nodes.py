@@ -64,25 +64,35 @@ def start_node(base_url, project_id, node_id, auth=None):
     return response.json() if response.text else {}
 
 
+def open_project(base_url, project_id, auth=None):
+    url = f"{base_url}/projects/{project_id}/open"
+    response = requests.post(url, timeout=30, auth=auth)
+    response.raise_for_status()
+    return response.json()
+
+
 def main():
     base_url = get_base_url()
     auth = get_auth()
-    project_id = get_env("GNS3_PROJECT_ID", 1)
     
-    # If no project_id provided, try to read from file
-    if not project_id:
-        try:
-            with open("project_id.txt", "r") as f:
-                project_id = f.read().strip()
-        except FileNotFoundError:
-            pass
+    # Read project_id from file written by load_project.py
+    try:
+        with open("project_id.txt", "r") as f:
+            project_id = f.read().strip()
+    except FileNotFoundError:
+        raise SystemExit("project_id.txt not found. Run load_project.py first.")
     
-    project_name = get_env("GNS3_PROJECT_NAME", 2)
-    project = find_project(base_url, project_name, project_id, auth=auth)
-    project_id = project.get("project_id")
-    if not project_id:
-        raise SystemExit("Found project but project_id is missing")
-
+    print(f"Opening project {project_id}")
+    try:
+        open_project(base_url, project_id, auth=auth)
+        print("Project opened successfully")
+    except Exception as e:
+        print(f"Project open failed: {e}")
+        # Continue anyway
+    
+    # Get project details
+    project = find_project(base_url, None, project_id, auth=auth)
+    
     print(f"Starting nodes for project {project.get('name')} ({project_id})")
     response = requests.get(f"{base_url}/projects/{project_id}/nodes", timeout=30, auth=auth)
     response.raise_for_status()
@@ -99,8 +109,11 @@ def main():
             continue
 
         print(f"Starting node {node.get('name', node_id)} ({node_id})")
-        result = start_node(base_url, project_id, node_id, auth=auth)
-        print(f"Started node {node_id}: {result}")
+        try:
+            result = start_node(base_url, project_id, node_id, auth=auth)
+            print(f"Started node {node_id}: {result}")
+        except Exception as e:
+            print(f"Failed to start node {node_id}: {e}")
 
 
 if __name__ == "__main__":

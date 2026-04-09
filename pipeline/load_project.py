@@ -5,6 +5,7 @@ from pathlib import Path
 
 import requests
 from requests.auth import HTTPBasicAuth
+import shutil
 
 
 def get_env(name, index=None, default=None):
@@ -43,28 +44,39 @@ def resolve_project_path(project_path: str) -> Path:
     return project_file.expanduser().resolve()
 
 
-def import_project(base_url, project_path, project_name=None):
+def find_project(base_url, project_name, auth=None):
+    response = requests.get(f"{base_url}/projects", timeout=30, auth=auth)
+    response.raise_for_status()
+    projects = response.json()
+
+    for project in projects:
+        if project.get("name") == project_name:
+            return project
+
+    raise SystemExit(f"Project '{project_name}' not found in GNS3 server")
+
+
+def import_project(base_url, project_path, project_name=None, auth=None):
     project_file = resolve_project_path(project_path)
     if not project_file.exists():
         raise SystemExit(f"Project file not found: {project_file}")
 
-    url = f"{base_url}/projects/load"
-    payload = {"path": str(project_file)}
-
-    response = requests.post(url, json=payload, auth=get_auth(), timeout=60)
-    if response.ok:
-        return response.json()
-
-    raise SystemExit(
-        f"Failed to import project {project_file}\n"
-        f"URL: {url}\n"
-        f"Status: {response.status_code}\n"
-        f"Body: {response.text}"
-    )
+    # Copy to GNS3 projects directory
+    gns3_projects_dir = Path.home() / "GNS3" / "projects" / "PoC"
+    gns3_projects_dir.mkdir(parents=True, exist_ok=True)
+    target_file = gns3_projects_dir / "PoC.gns3"
+    
+    print(f"Copying {project_file} to {target_file}")
+    shutil.copy2(project_file, target_file)
+    
+    # Find the project in GNS3
+    project = find_project(base_url, "PoC", auth=auth)
+    return project
 
 
 def main():
     base_url = get_base_url()
+    auth = get_auth()
     project_path = get_env("GNS3_PROJECT_PATH", 1, default=str(get_repo_root() / "PoC.gns3"))
     if not project_path:
         raise SystemExit("GNS3_PROJECT_PATH is required")
@@ -73,8 +85,8 @@ def main():
     if not project_name:
         project_name = Path(project_path).stem
 
-    print(f"Importing project from {project_path} into {base_url}")
-    data = import_project(base_url, project_path, project_name)
+    print(f"Importing project from {project_path}")
+    data = import_project(base_url, project_path, project_name, auth=auth)
     print("Project imported successfully:")
     print(data)
     
@@ -86,3 +98,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
