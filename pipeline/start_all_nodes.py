@@ -32,10 +32,16 @@ def get_auth():
     return None
 
 
-def find_project(base_url, project_name=None, auth=None):
+def find_project(base_url, project_name=None, project_id=None, auth=None):
     response = requests.get(f"{base_url}/projects", timeout=30, auth=auth)
     response.raise_for_status()
     projects = response.json()
+
+    if project_id:
+        for project in projects:
+            if project.get("project_id") == project_id:
+                return project
+        raise SystemExit(f"Project with ID {project_id} not found")
 
     if project_name:
         for project in projects:
@@ -47,7 +53,7 @@ def find_project(base_url, project_name=None, auth=None):
 
     raise SystemExit(
         "Unable to locate a single GNS3 project. "
-        "Set GNS3_PROJECT_NAME or ensure the server contains only one project."
+        "Set GNS3_PROJECT_NAME, GNS3_PROJECT_ID, or ensure the server contains only one project."
     )
 
 
@@ -61,8 +67,18 @@ def start_node(base_url, project_id, node_id, auth=None):
 def main():
     base_url = get_base_url()
     auth = get_auth()
-    project_name = get_env("GNS3_PROJECT_NAME", 1)
-    project = find_project(base_url, project_name, auth=auth)
+    project_id = get_env("GNS3_PROJECT_ID", 1)
+    
+    # If no project_id provided, try to read from file
+    if not project_id:
+        try:
+            with open("project_id.txt", "r") as f:
+                project_id = f.read().strip()
+        except FileNotFoundError:
+            pass
+    
+    project_name = get_env("GNS3_PROJECT_NAME", 2)
+    project = find_project(base_url, project_name, project_id, auth=auth)
     project_id = project.get("project_id")
     if not project_id:
         raise SystemExit("Found project but project_id is missing")

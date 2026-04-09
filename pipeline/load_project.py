@@ -77,6 +77,11 @@ def main():
     data = import_project(base_url, project_path, project_name)
     print("Project imported successfully:")
     print(data)
+    
+    # Write project_id to file for next step
+    with open("project_id.txt", "w") as f:
+        f.write(data['project_id'])
+    print(f"PROJECT_ID={data['project_id']}")
 
 
 if __name__ == "__main__":

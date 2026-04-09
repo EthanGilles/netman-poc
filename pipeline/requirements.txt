@@ -1,1 +1,1 @@
-requests
+requests>=22.0.2
