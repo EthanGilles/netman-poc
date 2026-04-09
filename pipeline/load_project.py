@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import json
 import os
-import shutil
 import sys
 import time
 from pathlib import Path
@@ -86,6 +85,7 @@ def open_project(base_url, project_id, auth=None):
             print(f"Opened project {project_id}")
             return response.json()
         if response.status_code == 409:
+            print(f"409 response body: {response.text}")
             print(f"Project not ready yet, retrying ({attempt + 1}/10)...")
             time.sleep(2)
             continue
@@ -93,8 +93,25 @@ def open_project(base_url, project_id, auth=None):
     raise SystemExit(f"Failed to open project {project_id} after retries")
 
 
-def get_gns3_project_dir(project_id):
-    return Path.home() / "GNS3" / "projects" / project_id
+def link_project_dir(project_id, project_file: Path):
+    """Symlink the GNS3 project directory to the repo workspace directory.
+    This avoids copying files — GNS3 reads the .gns3 file directly from the repo."""
+    projects_dir = Path.home() / "GNS3" / "projects"
+    projects_dir.mkdir(parents=True, exist_ok=True)
+    link = projects_dir / project_id
+
+    if link.is_symlink():
+        if link.resolve() == project_file.parent.resolve():
+            print(f"Symlink already correct: {link}")
+            return
+        link.unlink()
+        print(f"Removed stale symlink {link}")
+    elif link.exists():
+        print(f"Project directory already exists at {link} (not a symlink, leaving it)")
+        return
+
+    link.symlink_to(project_file.parent)
+    print(f"Linked {link} -> {project_file.parent}")
 
 
 def import_project(base_url, project_path, auth=None):
@@ -107,27 +124,21 @@ def import_project(base_url, project_path, auth=None):
     project_name = gns3_data["name"]
     print(f"Loading project '{project_name}' (ID: {project_id})")
 
+    # Point GNS3's project directory at the repo workspace — no file copying
+    link_project_dir(project_id, project_file)
+
     # Check if project already exists on the server
     existing = find_project_by_id(base_url, project_id, auth=auth)
-
     if existing:
-        print(f"Project exists on server (status: {existing.get('status', 'unknown')})")
-        # Close it so we can safely overwrite the .gns3 file
-        close_project(base_url, project_id, auth=auth)
+        status = existing.get('status', 'unknown')
+        print(f"Project exists on server (status: {status})")
+        if status == 'opened':
+            close_project(base_url, project_id, auth=auth)
     else:
-        # Create the project on the server, then close it so we can copy our file
         print("Project not found on server, creating...")
         create_project(base_url, project_id, project_name, auth=auth)
         close_project(base_url, project_id, auth=auth)
 
-    # Copy the .gns3 file into the server's project directory
-    project_dir = get_gns3_project_dir(project_id)
-    project_dir.mkdir(parents=True, exist_ok=True)
-    target_file = project_dir / f"{project_name}.gns3"
-    print(f"Copying {project_file} -> {target_file}")
-    shutil.copy2(project_file, target_file)
-
-    # Open the project so nodes can be started
     project = open_project(base_url, project_id, auth=auth)
     return project
 
