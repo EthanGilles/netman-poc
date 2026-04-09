@@ -48,10 +48,8 @@ def import_project(base_url, project_path, project_name=None):
     if not project_file.exists():
         raise SystemExit(f"Project file not found: {project_file}")
 
-    url = f"{base_url}/projects/import"
+    url = f"{base_url}/projects/load"
     payload = {"path": str(project_file)}
-    if project_name:
-        payload["name"] = project_name
 
     response = requests.post(url, json=payload, auth=get_auth(), timeout=60)
     if response.ok:
