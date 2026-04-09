@@ -64,9 +64,23 @@ def start_node(base_url, project_id, node_id, auth=None):
     return response.json() if response.text else {}
 
 
+def close_project(base_url, project_id, auth=None):
+    url = f"{base_url}/projects/{project_id}/close"
+    response = requests.post(url, timeout=30, auth=auth)
+    if response.status_code == 404:
+        return
+    response.raise_for_status()
+    print(f"Closed project {project_id}")
+
+
 def open_project(base_url, project_id, auth=None):
     url = f"{base_url}/projects/{project_id}/open"
     response = requests.post(url, timeout=30, auth=auth)
+    if response.status_code == 409:
+        # Already open — close and reopen so this session owns it
+        print("Project already open, closing and reopening...")
+        close_project(base_url, project_id, auth=auth)
+        response = requests.post(url, timeout=30, auth=auth)
     response.raise_for_status()
     return response.json()
 
@@ -74,21 +88,17 @@ def open_project(base_url, project_id, auth=None):
 def main():
     base_url = get_base_url()
     auth = get_auth()
-    
+
     # Read project_id from file written by load_project.py
     try:
         with open("project_id.txt", "r") as f:
             project_id = f.read().strip()
     except FileNotFoundError:
         raise SystemExit("project_id.txt not found. Run load_project.py first.")
-    
+
     print(f"Opening project {project_id}")
-    try:
-        open_project(base_url, project_id, auth=auth)
-        print("Project opened successfully")
-    except Exception as e:
-        print(f"Project open failed: {e}")
-        # Continue anyway
+    open_project(base_url, project_id, auth=auth)
+    print("Project opened successfully")
     
     # Get project details
     project = find_project(base_url, None, project_id, auth=auth)

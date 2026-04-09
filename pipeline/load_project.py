@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
 import requests
 from requests.auth import HTTPBasicAuth
-import shutil
 
 
 def get_env(name, index=None, default=None):
@@ -44,33 +45,82 @@ def resolve_project_path(project_path: str) -> Path:
     return project_file.expanduser().resolve()
 
 
-def find_project(base_url, project_name, auth=None):
+def parse_gns3_file(project_file: Path) -> dict:
+    with open(project_file) as f:
+        return json.load(f)
+
+
+def find_project_by_id(base_url, project_id, auth=None):
     response = requests.get(f"{base_url}/projects", timeout=30, auth=auth)
     response.raise_for_status()
-    projects = response.json()
-
-    for project in projects:
-        if project.get("name") == project_name:
+    for project in response.json():
+        if project.get("project_id") == project_id:
             return project
+    return None
 
-    raise SystemExit(f"Project '{project_name}' not found in GNS3 server")
+
+def close_project(base_url, project_id, auth=None):
+    url = f"{base_url}/projects/{project_id}/close"
+    response = requests.post(url, timeout=30, auth=auth)
+    if response.status_code == 404:
+        return
+    response.raise_for_status()
+    print(f"Closed project {project_id}")
 
 
-def import_project(base_url, project_path, project_name=None, auth=None):
+def create_project(base_url, project_id, project_name, auth=None):
+    url = f"{base_url}/projects"
+    payload = {"project_id": project_id, "name": project_name}
+    response = requests.post(url, json=payload, timeout=30, auth=auth)
+    response.raise_for_status()
+    print(f"Created project '{project_name}' ({project_id})")
+    return response.json()
+
+
+def open_project(base_url, project_id, auth=None):
+    url = f"{base_url}/projects/{project_id}/open"
+    response = requests.post(url, timeout=30, auth=auth)
+    response.raise_for_status()
+    print(f"Opened project {project_id}")
+    return response.json()
+
+
+def get_gns3_project_dir(project_id):
+    return Path.home() / "GNS3" / "projects" / project_id
+
+
+def import_project(base_url, project_path, auth=None):
     project_file = resolve_project_path(project_path)
     if not project_file.exists():
         raise SystemExit(f"Project file not found: {project_file}")
 
-    # Copy to GNS3 projects directory
-    gns3_projects_dir = Path.home() / "GNS3" / "projects" / "PoC"
-    gns3_projects_dir.mkdir(parents=True, exist_ok=True)
-    target_file = gns3_projects_dir / "PoC.gns3"
-    
-    print(f"Copying {project_file} to {target_file}")
+    gns3_data = parse_gns3_file(project_file)
+    project_id = gns3_data["project_id"]
+    project_name = gns3_data["name"]
+    print(f"Loading project '{project_name}' (ID: {project_id})")
+
+    # Check if project already exists on the server
+    existing = find_project_by_id(base_url, project_id, auth=auth)
+
+    if existing:
+        print(f"Project exists on server (status: {existing.get('status', 'unknown')})")
+        # Close it so we can safely overwrite the .gns3 file
+        close_project(base_url, project_id, auth=auth)
+    else:
+        # Create the project on the server, then close it so we can copy our file
+        print("Project not found on server, creating...")
+        create_project(base_url, project_id, project_name, auth=auth)
+        close_project(base_url, project_id, auth=auth)
+
+    # Copy the .gns3 file into the server's project directory
+    project_dir = get_gns3_project_dir(project_id)
+    project_dir.mkdir(parents=True, exist_ok=True)
+    target_file = project_dir / f"{project_name}.gns3"
+    print(f"Copying {project_file} -> {target_file}")
     shutil.copy2(project_file, target_file)
-    
-    # Find the project in GNS3
-    project = find_project(base_url, "PoC", auth=auth)
+
+    # Open the project so nodes can be started
+    project = open_project(base_url, project_id, auth=auth)
     return project
 
 
@@ -81,18 +131,16 @@ def main():
     if not project_path:
         raise SystemExit("GNS3_PROJECT_PATH is required")
 
-    project_name = get_env("GNS3_PROJECT_NAME", 2)
-    if not project_name:
-        project_name = Path(project_path).stem
-
     print(f"Importing project from {project_path}")
-    data = import_project(base_url, project_path, project_name, auth=auth)
-    print("Project imported successfully:")
-    print(data)
-    
+    data = import_project(base_url, project_path, auth=auth)
+    print("Project loaded successfully:")
+    print(f"  Name:   {data.get('name')}")
+    print(f"  ID:     {data.get('project_id')}")
+    print(f"  Status: {data.get('status')}")
+
     # Write project_id to file for next step
     with open("project_id.txt", "w") as f:
-        f.write(data['project_id'])
+        f.write(data["project_id"])
     print(f"PROJECT_ID={data['project_id']}")
 
 
