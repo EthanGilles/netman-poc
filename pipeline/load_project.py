@@ -81,14 +81,15 @@ def open_project(base_url, project_id, auth=None):
     url = f"{base_url}/projects/{project_id}/open"
     for attempt in range(10):
         response = requests.post(url, timeout=30, auth=auth)
-        if response.status_code == 200:
+        if response.status_code in (200, 201):
             print(f"Opened project {project_id}")
             return response.json()
         if response.status_code == 409:
-            print(f"409 response body: {response.text}")
-            print(f"Project not ready yet, retrying ({attempt + 1}/10)...")
+            print(f"Open failed (409): {response.text}")
+            print(f"Retrying ({attempt + 1}/10)...")
             time.sleep(2)
             continue
+        print(f"Open failed ({response.status_code}): {response.text}")
         response.raise_for_status()
     raise SystemExit(f"Failed to open project {project_id} after retries")
 
