@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 import sys
+import time
 from pathlib import Path
 
 import requests
@@ -79,10 +80,17 @@ def create_project(base_url, project_id, project_name, auth=None):
 
 def open_project(base_url, project_id, auth=None):
     url = f"{base_url}/projects/{project_id}/open"
-    response = requests.post(url, timeout=30, auth=auth)
-    response.raise_for_status()
-    print(f"Opened project {project_id}")
-    return response.json()
+    for attempt in range(10):
+        response = requests.post(url, timeout=30, auth=auth)
+        if response.status_code == 200:
+            print(f"Opened project {project_id}")
+            return response.json()
+        if response.status_code == 409:
+            print(f"Project not ready yet, retrying ({attempt + 1}/10)...")
+            time.sleep(2)
+            continue
+        response.raise_for_status()
+    raise SystemExit(f"Failed to open project {project_id} after retries")
 
 
 def get_gns3_project_dir(project_id):
