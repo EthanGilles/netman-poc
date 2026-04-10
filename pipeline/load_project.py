@@ -73,8 +73,10 @@ def link_project_dir(project_id, project_file: Path):
         link.unlink()
         print(f"Removed stale symlink {link}")
     elif link.exists():
-        print(f"Project directory already exists at {link} (not a symlink, leaving it)")
-        return
+        # Real directory exists — replace with symlink so GNS3 uses the repo's files
+        import shutil
+        shutil.rmtree(link)
+        print(f"Replaced existing project directory with symlink: {link}")
 
     link.symlink_to(project_file.parent)
     print(f"Linked {link} -> {project_file.parent}")

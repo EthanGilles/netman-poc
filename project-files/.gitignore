@@ -1,0 +1,15 @@
+# GNS3 runtime files - do not commit
+**/*.ghost
+**/*_iomem
+**/*_nvram
+**/*_bootflash
+**/*_rommon_vars
+**/*_lock
+**/*_log.txt
+**/*_stdout.txt
+**/ubridge.log
+**/ilt_*
+
+# Keep configs
+!**/configs/
+!**/configs/*.cfg
