@@ -59,11 +59,7 @@ def main():
     except FileNotFoundError:
         raise SystemExit("project_id.txt not found. Run load_project.py first.")
 
-    print(f"Opening project {project_id}")
-    open_project(base_url, project_id, auth=auth)
-    print("Project opened successfully")
-    
-    # Get project details
+    # Get project details (load_project.py already opened it)
     project = find_project(base_url, None, project_id, auth=auth)
     
     print(f"Starting nodes for project {project.get('name')} ({project_id})")
