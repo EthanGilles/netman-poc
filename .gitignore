@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+env/
+.env/
+
+# Pipeline runtime artifacts
+project_id.txt
+gns3server.log
+dynamips_*.log
+
+# GNS3
+*.gns3backup
+
+# OS
+.DS_Store
+Thumbs.db

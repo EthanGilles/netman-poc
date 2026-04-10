@@ -1,0 +1,57 @@
+name: GNS3 project import and start
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  gns3-import-start:
+    name: GNS3 import and start
+    runs-on: [gns3]
+    env:
+      GNS3_SERVER_HOST: 127.0.0.1
+      GNS3_SERVER_PORT: 3080
+      GNS3_PROJECT_PATH: ${{ github.workspace }}/PoC.gns3
+      GNS3_PROJECT_NAME: netman-poc
+      GNS3_API_USERNAME: ${{ secrets.GNS3_API_USERNAME }}
+      GNS3_API_PASSWORD: ${{ secrets.GNS3_API_PASSWORD }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r pipeline/requirements.txt
+
+      - name: Start GNS3 server
+        run: |
+          gns3server -L --host ${GNS3_SERVER_HOST} --port ${GNS3_SERVER_PORT} > gns3server.log 2>&1 &
+          echo "Waiting for GNS3 server to accept API connections..."
+          for i in $(seq 1 20); do
+            if curl --silent --fail -u "${GNS3_API_USERNAME}:${GNS3_API_PASSWORD}" http://${GNS3_SERVER_HOST}:${GNS3_SERVER_PORT}/v2/version >/dev/null 2>&1; then
+              echo "GNS3 server is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "GNS3 server failed to start"
+          cat gns3server.log || true
+          exit 1
+
+      - name: Import GNS3 project into server
+        run: python3 pipeline/load_project.py
+
+      - name: Start all nodes in imported project
+        run: python3 pipeline/start_all_nodes.py
+
+      # Configure
+
+      # Tests
+
+      - name: Cleanup
+        if: always()
+        run: |
+          pkill -f dynamips || true
+          pkill -f gns3server || true
