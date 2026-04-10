@@ -27,9 +27,6 @@ jobs:
 
       - name: Start GNS3 server
         run: |
-          pkill -f gns3server || true
-          pkill -f dynamips || true
-          sleep 2
           gns3server -L --host ${GNS3_SERVER_HOST} --port ${GNS3_SERVER_PORT} > gns3server.log 2>&1 &
           echo "Waiting for GNS3 server to accept API connections..."
           for i in $(seq 1 20); do
@@ -48,3 +45,13 @@ jobs:
 
       - name: Start all nodes in imported project
         run: python3 pipeline/start_all_nodes.py
+
+      # Configure
+
+      # Tests
+
+      - name: Cleanup
+        if: always()
+        run: |
+          pkill -f dynamips || true
+          pkill -f gns3server || true
