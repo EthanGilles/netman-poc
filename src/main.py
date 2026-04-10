@@ -1,0 +1,1 @@
+# Configure routers here (netmiko to SSH into nodes and run commands)
