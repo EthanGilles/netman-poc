@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  gns3-import-start:
-    name: GNS3 import and start
+   run-gns3-and-tests:
+    name: Run GNS3 project and tests
     runs-on: [gns3]
     env:
       GNS3_SERVER_HOST: 127.0.0.1
@@ -44,10 +44,10 @@ jobs:
 
       # Set up GNS3 project and start nodes
 
-      - name: Import GNS3 project into server
+      - name: Import GNS3 project
         run: python3 pipeline/load_project.py
 
-      - name: Start all nodes in imported project
+      - name: Start all nodes
         run: python3 pipeline/start_all_nodes.py
 
       # Wait for nodes to boot up

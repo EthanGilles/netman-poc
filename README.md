@@ -40,6 +40,20 @@ This creates a symlink so GNS3's project directory points at your repo clone. Af
    git push
    ```
 
+## Adding a new router to monitoring
+
+1. Configure SNMP on the router:
+   ```
+   Router(config)# snmp-server community public RO
+   ```
+
+2. Add the router to [monitoring/targets.json](monitoring/targets.json):
+   ```json
+   {"targets": ["<ip>"], "labels": {"name": "<hostname>"}}
+   ```
+
+3. Prometheus picks up the change automatically.
+
 ## CI Pipeline (Self-Hosted Runner)
 
 This GitHub Actions pipeline runs on your laptop instead of GitHub's cloud servers.
