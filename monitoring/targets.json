@@ -6,5 +6,29 @@
   {
     "targets": ["198.51.100.102"],
     "labels": {"name": "R2"}
+  },
+  {
+    "targets": ["198.51.100.103"],
+    "labels": {"name": "R3"}
+  },
+  {
+    "targets": ["198.51.100.104"],
+    "labels": {"name": "R4"}
+  },
+  {
+    "targets": ["198.51.100.105"],
+    "labels": {"name": "R5"}
+  },
+  {
+    "targets": ["198.51.100.106"],
+    "labels": {"name": "R6"}
+  },
+  {
+    "targets": ["198.51.100.107"],
+    "labels": {"name": "R7"}
+  },
+  {
+    "targets": ["198.51.100.108"],
+    "labels": {"name": "R8"}
   }
 ]
