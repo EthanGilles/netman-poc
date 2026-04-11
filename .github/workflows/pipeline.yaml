@@ -71,7 +71,11 @@ jobs:
       # - name: Configure routers
       #   run: python3 src/main.py
 
-      # Tests 
+      # Wait for Prometheus to complete a scrape cycle after configuration
+      - name: Wait for Prometheus scrape
+        run: sleep 15
+
+      # Tests
 
       - name: Run tests
         run: python3 -m pytest tests -v
