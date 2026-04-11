@@ -23,7 +23,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r pipeline/requirements.txt
+          python3 -m pip install -r requirements.txt
 
       # Start GNS3 server in background and wait for it to be ready
 
