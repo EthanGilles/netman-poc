@@ -389,8 +389,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -139,
-                "y": -156,
+                "x": -134,
+                "y": -197,
                 "z": 1
             },
             {
@@ -818,12 +818,12 @@
                 "label": {
                     "rotation": 0,
                     "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
-                    "text": "R9",
-                    "x": 19,
+                    "text": "Denver-R2",
+                    "x": -9,
                     "y": -25
                 },
                 "locked": false,
-                "name": "R9",
+                "name": "Denver-R2",
                 "node_id": "74cb0794-e535-4d42-acaa-3a1f7e1e2d2d",
                 "node_type": "dynamips",
                 "port_name_format": "Ethernet{0}",
@@ -887,12 +887,12 @@
                 "label": {
                     "rotation": 0,
                     "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
-                    "text": "R11",
-                    "x": 14,
+                    "text": "Denver-R1",
+                    "x": -9,
                     "y": -25
                 },
                 "locked": false,
-                "name": "R11",
+                "name": "Denver-R1",
                 "node_id": "41a85436-cf69-4035-80e4-1e5760abd52e",
                 "node_type": "dynamips",
                 "port_name_format": "Ethernet{0}",
@@ -941,8 +941,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -247,
-                "y": -311,
+                "x": -246,
+                "y": -309,
                 "z": 1
             },
             {
