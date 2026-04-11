@@ -21,7 +21,7 @@ def test_prometheus_reachable():
 
 def test_snmp_target_up():
     """Check that Prometheus successfully scraped the SNMP target."""
-    results = _query(f'up{{job="snmp", instance="{SNMP_TARGET}"}}')
+    results = _query(f'up{{job="snmp_exporter", instance="{SNMP_TARGET}"}}')
     assert results, f"No 'up' metric found for SNMP target {SNMP_TARGET}"
     value = results[0]["value"][1]
     assert value == "1", (
