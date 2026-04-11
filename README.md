@@ -60,5 +60,6 @@ Your laptop needs a GitHub Actions self-hosted runner registered with the `gns3`
 2. Loads the `PoC.gns3` project from the checked-out repo
 3. Boots all nodes using `pipeline/start_all_nodes.py`
 4. Waits up to 5 minutes for routers to come online (pings `198.51.100.102`)
-5. Runs `pytest tests/test_connectivity.py`
-6. Shuts down `gns3server` and `dynamips` when done
+5. Runs `python src/main.py` to configure routers
+6. Runs `pytest tests/` to test configurations
+7. Shuts down `gns3server` and `dynamips` when done
