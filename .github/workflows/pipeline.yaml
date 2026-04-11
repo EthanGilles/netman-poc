@@ -71,15 +71,19 @@ jobs:
       # - name: Configure routers
       #   run: python3 src/main.py
 
-      # Tests 
+      # Wait for Prometheus to complete a scrape cycle after configuration
+      - name: Wait for Prometheus scrape
+        run: sleep 15
+
+      # Tests
 
       - name: Run tests
         run: python3 -m pytest tests -v
 
-      # Kill GNS3 server 
-
+      # Kill GNS3 server and re-symlink project directory to repo
       - name: Cleanup
         if: always()
         run: |
           pkill -f dynamips || true
           pkill -f gns3server || true
+          ln -sfn /home/netman/netman-poc /home/netman/GNS3/projects/fa306d8b-9395-4962-98c9-fc21fe61755f
