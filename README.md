@@ -16,19 +16,13 @@ With GNS3 open and running, run this once from the repo root:
 GNS3_API_USERNAME=<your-gns3-username> GNS3_API_PASSWORD=<your-gns3-password> python3 pipeline/load_project.py
 ```
 
-Your GNS3 credentials can be found in the server config:
+You can find your GNS3 credentials in the server config:
 
 ```bash
 cat ~/.config/GNS3/2.2/gns3_server.conf
 ```
 
-If your local server has no authentication enabled, omit the env vars:
-
-```bash
-python3 pipeline/load_project.py
-```
-
-This creates a symlink so GNS3's project directory points at your repo clone. After this you can open `PoC.gns3` directly from the repo and all saves will go back into git automatically.
+This creates a symlink so GNS3's project directory points at your repo clone. After that you can open `PoC.gns3` directly from the repo and all saves will go back into git automatically.
 
 ## Making changes
 
@@ -45,3 +39,26 @@ This creates a symlink so GNS3's project directory points at your repo clone. Af
    git commit -m "describe your change"
    git push
    ```
+
+## CI Pipeline (Self-Hosted Runner)
+
+This GitHub Actions pipeline runs on your laptop instead of GitHub's cloud servers.
+
+### How it works
+
+The pipeline targets your laptop using the `gns3` label:
+
+```yaml
+runs-on: [gns3]
+```
+
+Your laptop needs a GitHub Actions self-hosted runner registered with the `gns3` label.
+
+### What runs on each PR to `main`
+
+1. Starts `gns3server` locally on `127.0.0.1:3080`
+2. Loads the `PoC.gns3` project from the checked-out repo
+3. Boots all nodes using `pipeline/start_all_nodes.py`
+4. Waits up to 5 minutes for routers to come online (pings `198.51.100.102`)
+5. Runs `pytest tests/test_connectivity.py`
+6. Shuts down `gns3server` and `dynamips` when done
