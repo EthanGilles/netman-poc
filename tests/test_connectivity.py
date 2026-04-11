@@ -1,8 +1,10 @@
+import json
 import subprocess
 import sys
+from pathlib import Path
 
-
-TARGET_IP = "198.51.100.102"
+_raw = json.loads((Path(__file__).parent.parent / "monitoring" / "targets.json").read_text())
+TARGETS = [{"ip": t, "name": entry["labels"]["name"]} for entry in _raw for t in entry["targets"]]
 
 
 def ping(host: str, count: int = 3, timeout: int = 5) -> bool:
@@ -15,15 +17,18 @@ def ping(host: str, count: int = 3, timeout: int = 5) -> bool:
 
 
 def test_gns3_router_reachable():
-    assert ping(TARGET_IP), (
-        f"Could not reach {TARGET_IP} — is GNS3 running and the project loaded?"
-    )
+    for target in TARGETS:
+        assert ping(target["ip"]), (
+            f"Could not reach {target['name']} ({target['ip']}) — "
+            "is GNS3 running and the project loaded?"
+        )
 
 
 if __name__ == "__main__":
-    if ping(TARGET_IP):
-        print(f"OK: {TARGET_IP} is reachable")
-        sys.exit(0)
-    else:
-        print(f"FAIL: {TARGET_IP} is not reachable", file=sys.stderr)
+    failed = [t for t in TARGETS if not ping(t["ip"])]
+    if failed:
+        for t in failed:
+            print(f"FAIL: {t['name']} ({t['ip']}) is not reachable", file=sys.stderr)
         sys.exit(1)
+    for t in TARGETS:
+        print(f"OK: {t['name']} ({t['ip']}) is reachable")
