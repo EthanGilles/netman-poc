@@ -16,6 +16,7 @@ jobs:
       GNS3_PROJECT_NAME: netman-poc
       GNS3_API_USERNAME: ${{ secrets.GNS3_API_USERNAME }}
       GNS3_API_PASSWORD: ${{ secrets.GNS3_API_PASSWORD }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,60 +26,41 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
 
-      # Start GNS3 server in background and wait for it to be ready
 
+      # Start GNS3 server in background and wait for it to be ready
       - name: Start GNS3 server
-        run: |
-          gns3server -L --host ${GNS3_SERVER_HOST} --port ${GNS3_SERVER_PORT} > gns3server.log 2>&1 &
-          echo "Waiting for GNS3 server to accept API connections..."
-          for i in $(seq 1 20); do
-            if curl --silent --fail -u "${GNS3_API_USERNAME}:${GNS3_API_PASSWORD}" http://${GNS3_SERVER_HOST}:${GNS3_SERVER_PORT}/v2/version >/dev/null 2>&1; then
-              echo "GNS3 server is up"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "GNS3 server failed to start"
-          cat gns3server.log || true
-          exit 1
+        run: pipeline/startGNS3.sh
+
 
       # Set up GNS3 project and start nodes
-
       - name: Import GNS3 project
         run: python3 pipeline/load_project.py
 
       - name: Start all nodes
         run: python3 pipeline/start_all_nodes.py
 
+
       # Wait for nodes to boot up
-      
       - name: Wait for routers to boot
-        run: |
-          echo "Waiting for 198.51.100.102 to respond..."
-          for i in $(seq 1 60); do
-            if ping -c 1 -W 3 198.51.100.102 >/dev/null 2>&1; then
-              echo "198.51.100.102 is reachable (attempt $i)"
-              exit 0
-            fi
-            echo "Attempt $i/60 — not yet reachable, waiting 5s..."
-            sleep 5
-          done
-          echo "Timed out waiting for 198.51.100.102 after 5 minutes"
-          exit 1
+        run: pipeline/waitForRouter.sh
 
-      # Configure routers 
 
+      # Configure routers
       # - name: Configure routers
       #   run: python3 src/main.py
 
-      # Wait for Prometheus to complete a scrape cycle after configuration
-      - name: Wait for Prometheus scrape
-        run: sleep 15
+
+      # Reload Prometheus and wait for scrape interval
+      - name: Reload Prometheus and wait for scrape
+        run: |
+          curl --silent --fail -X POST http://localhost:9090/-/reload
+          sleep 10
+
 
       # Tests
-
       - name: Run tests
         run: python3 -m pytest tests -v
+
 
       # Kill GNS3 server and re-symlink project directory to repo
       - name: Cleanup

@@ -3,8 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-_raw = json.loads((Path(__file__).parent.parent / "monitoring" / "targets.json").read_text())
-TARGETS = [{"ip": t, "name": entry["labels"]["name"]} for entry in _raw for t in entry["targets"]]
+raw = json.loads((Path(__file__).parent.parent / "monitoring" / "targets.json").read_text())
+TARGETS = [{"ip": t, "name": entry["labels"]["name"]} for entry in raw for t in entry["targets"]]
 
 
 def ping(host: str, count: int = 3, timeout: int = 5) -> bool:
