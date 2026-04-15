@@ -849,6 +849,11 @@
                 "properties": {
                     "interfaces": [
                         {
+                            "name": "ens33",
+                            "special": false,
+                            "type": "ethernet"
+                        },
+                        {
                             "name": "lo",
                             "special": true,
                             "type": "ethernet"
@@ -861,11 +866,6 @@
                         {
                             "name": "virbr0",
                             "special": true,
-                            "type": "ethernet"
-                        },
-                        {
-                            "name": "wlp0s20f3",
-                            "special": false,
                             "type": "ethernet"
                         }
                     ],
@@ -1677,5 +1677,5 @@
     "type": "topology",
     "variables": null,
     "version": "2.2.55",
-    "zoom": 141
+    "zoom": 59
 }
