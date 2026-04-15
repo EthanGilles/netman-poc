@@ -16,7 +16,53 @@
     "supplier": null,
     "topology": {
         "computes": [],
-        "drawings": [],
+        "drawings": [
+            {
+                "drawing_id": "efefab22-4cb6-4a2b-bb2a-9a1699fd9ff8",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg width=\"252\" height=\"74\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">ebgp (AS65001)\nLo0: 1.1.1.1</text></svg>",
+                "x": -566,
+                "y": -176,
+                "z": 2
+            },
+            {
+                "drawing_id": "d1a985c1-9a78-488d-a918-6701cdb66f6f",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg width=\"243\" height=\"74\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">ebgp(AS65002)\nLo0: 2.2.2.2</text></svg>",
+                "x": -344,
+                "y": -343,
+                "z": 2
+            },
+            {
+                "drawing_id": "ea52d3ec-4081-4005-97b6-c64accff8750",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg width=\"212\" height=\"74\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">ebgp (65003)\nLo0 : 3.3.3.3</text></svg>",
+                "x": -536,
+                "y": -489,
+                "z": 2
+            },
+            {
+                "drawing_id": "af60c9f0-bae5-4460-b9fe-668291b04efe",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg width=\"997\" height=\"155\"><rect width=\"997\" height=\"155\" fill=\"#ffffff\" fill-opacity=\"1.0\" stroke-width=\"2\" stroke=\"#000000\" /></svg>",
+                "x": -586,
+                "y": -529,
+                "z": 0
+            },
+            {
+                "drawing_id": "c1ee16d8-6117-4c91-a168-963779fa8fd2",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg width=\"1005\" height=\"569\"><rect width=\"1005\" height=\"569\" fill=\"#ffffff\" fill-opacity=\"1.0\" stroke-width=\"2\" stroke=\"#000000\" /></svg>",
+                "x": -584,
+                "y": -231,
+                "z": -5
+            }
+        ],
         "links": [
             {
                 "filters": {},
@@ -821,8 +867,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -293,
-                "y": -140,
+                "x": -292,
+                "y": -159,
                 "z": 1
             },
             {
@@ -849,11 +895,6 @@
                 "properties": {
                     "interfaces": [
                         {
-                            "name": "ens33",
-                            "special": false,
-                            "type": "ethernet"
-                        },
-                        {
                             "name": "lo",
                             "special": true,
                             "type": "ethernet"
@@ -866,6 +907,11 @@
                         {
                             "name": "virbr0",
                             "special": true,
+                            "type": "ethernet"
+                        },
+                        {
+                            "name": "wlp0s20f3",
+                            "special": false,
                             "type": "ethernet"
                         }
                     ],
@@ -891,8 +937,8 @@
                 "symbol": ":/symbols/cloud.svg",
                 "template_id": "39e257dc-8412-3174-b6b3-0ee3ed6a43e9",
                 "width": 159,
-                "x": 485,
-                "y": -13,
+                "x": 714,
+                "y": -24,
                 "z": 1
             },
             {
@@ -960,8 +1006,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": 5,
-                "y": -139,
+                "x": 123,
+                "y": -169,
                 "z": 1
             },
             {
@@ -1029,8 +1075,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -159,
-                "y": -303,
+                "x": -68,
+                "y": -324,
                 "z": 1
             },
             {
@@ -1098,8 +1144,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -291,
-                "y": 74,
+                "x": -293,
+                "y": 41,
                 "z": 1
             },
             {
@@ -1167,8 +1213,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": 8,
-                "y": 72,
+                "x": 130,
+                "y": 32,
                 "z": 1
             },
             {
@@ -1236,8 +1282,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -370,
-                "y": 264,
+                "x": -404,
+                "y": 267,
                 "z": 1
             },
             {
@@ -1305,8 +1351,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -170,
-                "y": 261,
+                "x": -186,
+                "y": 264,
                 "z": 1
             },
             {
@@ -1374,8 +1420,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -4,
-                "y": 260,
+                "x": 38,
+                "y": 264,
                 "z": 1
             },
             {
@@ -1443,8 +1489,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": 167,
-                "y": 261,
+                "x": 259,
+                "y": 265,
                 "z": 1
             },
             {
@@ -1512,8 +1558,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": 91,
-                "y": -446,
+                "x": 108,
+                "y": -467,
                 "z": 1
             },
             {
@@ -1581,8 +1627,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "015c8561-0c4c-416a-b738-bb3849150532",
                 "width": 66,
-                "x": -327,
-                "y": -442,
+                "x": -290,
+                "y": -463,
                 "z": 1
             },
             {
@@ -1668,8 +1714,8 @@
                 "symbol": ":/symbols/ethernet_switch.svg",
                 "template_id": "1966b864-93e7-32d5-965f-001384eec461",
                 "width": 72,
-                "x": 331,
-                "y": 12,
+                "x": 500,
+                "y": 0,
                 "z": 1
             }
         ]
@@ -1677,5 +1723,5 @@
     "type": "topology",
     "variables": null,
     "version": "2.2.55",
-    "zoom": 59
+    "zoom": 99
 }
