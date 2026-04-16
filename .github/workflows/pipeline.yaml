@@ -51,11 +51,10 @@ jobs:
 
 
       # Reload Prometheus and wait for scrape interval
-      - name: Reload Prometheus and wait for scrape
+      - name: Reload Prometheus and wait for OSPF convergence
         run: |
           curl --silent --fail -X POST http://localhost:9090/-/reload
-          sleep 10
-
+          sleep 60
 
       # Tests
       - name: Run tests
