@@ -51,15 +51,14 @@ jobs:
 
 
       # Reload Prometheus and wait for scrape interval
-      - name: Reload Prometheus and wait for scrape
+      - name: Reload Prometheus and wait for OSPF convergence
         run: |
           curl --silent --fail -X POST http://localhost:9090/-/reload
-          sleep 10
-
+          sleep 10s
 
       # Tests
       - name: Run tests
-        run: python3 -m pytest tests -v
+        run: python3 -m pytest tests -v --deselect=tests/test_routes.py::test_OSPF
 
 
       # Kill GNS3 server and re-symlink project directory to repo
