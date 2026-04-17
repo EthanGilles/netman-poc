@@ -31,7 +31,7 @@ def test_BGP(target):
     """Test R1 (BGP)."""
     try:
         with ssh_connect(target["ip"]) as conn:
-            output = conn.send_command("ping 2.2.2.2 source 1.1.1.1")
+            output = conn.send_command("ping 3.3.3.3 source 1.1.1.1")
             print(output)
             assert "!" in output.lower(), (
                 f"{target['name']}: ping to R2 Loopback is not available."

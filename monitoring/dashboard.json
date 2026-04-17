@@ -1,0 +1,391 @@
+{
+  "title": "Network Overview",
+  "uid": "netman-v2",
+  "description": "GNS3 lab — R1-R8 OSPF/BGP SNMP monitoring",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "browser",
+  "tags": ["network", "snmp"],
+  "graphTooltip": 1,
+  "panels": [
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Router Status",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": { "color": "red",   "index": 0, "text": "DOWN" },
+                "1": { "color": "green", "index": 1, "text": "UP"   }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red",   "value": null },
+              { "color": "green", "value": 1    }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 1 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+          "expr": "up{job=\"snmp_exporter\"}",
+          "instant": true,
+          "legendFormat": "{{name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Device Reachability",
+      "type": "stat"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "id": 10,
+      "title": "Interface Traffic",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2,
+            "lineInterpolation": "smooth", "showPoints": "never",
+            "spanNulls": false, "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" },
+            "axisBorderShow": false, "axisCenteredZero": false,
+            "axisColorMode": "text", "axisPlacement": "auto",
+            "barAlignment": 0, "gradientMode": "none", "insertNulls": false,
+            "scaleDistribution": { "type": "linear" }, "pointSize": 5,
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false }
+          },
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 7 },
+      "id": 11,
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+          "expr": "sum by(name) (rate(ifHCInOctets{job=\"snmp_exporter\"}[2m])) * 8",
+          "legendFormat": "{{name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Traffic In (bits/sec)",
+      "type": "timeseries"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2,
+            "lineInterpolation": "smooth", "showPoints": "never",
+            "spanNulls": false, "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" },
+            "axisBorderShow": false, "axisCenteredZero": false,
+            "axisColorMode": "text", "axisPlacement": "auto",
+            "barAlignment": 0, "gradientMode": "none", "insertNulls": false,
+            "scaleDistribution": { "type": "linear" }, "pointSize": 5,
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false }
+          },
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 7 },
+      "id": 12,
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+          "expr": "sum by(name) (rate(ifHCOutOctets{job=\"snmp_exporter\"}[2m])) * 8",
+          "legendFormat": "{{name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Traffic Out (bits/sec)",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 17 },
+      "id": 13,
+      "title": "Interface Health",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2,
+            "lineInterpolation": "smooth", "showPoints": "never",
+            "spanNulls": false, "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" },
+            "axisBorderShow": false, "axisCenteredZero": false,
+            "axisColorMode": "text", "axisPlacement": "auto",
+            "barAlignment": 0, "gradientMode": "none", "insertNulls": false,
+            "scaleDistribution": { "type": "linear" }, "pointSize": 5,
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false }
+          },
+          "unit": "pps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "id": 14,
+      "options": {
+        "legend": { "calcs": ["max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+          "expr": "sum by(name) (rate(ifInErrors{job=\"snmp_exporter\"}[2m]))",
+          "legendFormat": "{{name}} In",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+          "expr": "sum by(name) (rate(ifOutErrors{job=\"snmp_exporter\"}[2m]))",
+          "legendFormat": "{{name}} Out",
+          "refId": "B"
+        }
+      ],
+      "title": "Interface Error Rate",
+      "type": "timeseries"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-GrYlRd" },
+          "custom": { "fillOpacity": 80, "lineWidth": 1,
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false }
+          },
+          "unit": "bps", "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
+      "id": 15,
+      "options": {
+        "displayMode": "gradient", "fillOpacity": 80,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "values": false },
+        "showUnfilled": true, "sizing": "auto",
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+          "expr": "topk(15, rate(ifHCInOctets{job=\"snmp_exporter\"}[2m]) * 8)",
+          "legendFormat": "{{name}} if{{ifIndex}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Top Interfaces by Traffic",
+      "type": "bargauge"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto", "inspect": false,
+            "cellOptions": { "type": "auto" }
+          },
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "text", "value": null } ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Value" },
+            "properties": [
+              { "id": "displayName", "value": "Status" },
+              { "id": "custom.width", "value": 100 },
+              { "id": "custom.cellOptions", "value": { "type": "color-text" } },
+              {
+                "id": "mappings",
+                "value": [{
+                  "type": "value",
+                  "options": {
+                    "1": { "color": "green",  "index": 0, "text": "up"   },
+                    "2": { "color": "red",    "index": 1, "text": "down" },
+                    "3": { "color": "yellow", "index": 2, "text": "testing" },
+                    "5": { "color": "orange", "index": 3, "text": "dormant" }
+                  }
+                }]
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "red",   "value": null },
+                    { "color": "green", "value": 1    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "ifIndex" },
+            "properties": [ { "id": "custom.width", "value": 70 } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "name" },
+            "properties": [ { "id": "custom.width", "value": 70 } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Time" },
+            "properties": [ { "id": "custom.hidden", "value": true } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "job" },
+            "properties": [ { "id": "custom.hidden", "value": true } ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "instance" },
+            "properties": [ { "id": "custom.hidden", "value": true } ]
+          }
+        ]
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 26 },
+      "id": 16,
+      "options": {
+        "cellHeight": "sm",
+        "footer": { "show": false },
+        "showHeader": true,
+        "sortBy": [ { "desc": false, "displayName": "name" } ]
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "netman-prometheus" },
+          "expr": "ifOperStatus{job=\"snmp_exporter\"}",
+          "instant": true,
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "title": "Interface Operational Status",
+      "transformations": [],
+      "type": "table"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 },
+      "id": 17,
+      "title": "Network Topology",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "netman-infinity" },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 20, "w": 24, "x": 0, "y": 37 },
+      "id": 18,
+      "options": {
+        "nodes": {
+          "arcs": [
+            { "field": "arc__up",   "color": "green" },
+            { "field": "arc__down", "color": "red"   }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "netman-infinity" },
+          "refId": "nodes",
+          "type": "json", "source": "url",
+          "url": "http://localhost:8765/nodes",
+          "url_options": { "method": "GET" },
+          "format": "table", "parser": "backend",
+          "columns": [
+            { "selector": "id",       "text": "id",       "type": "string" },
+            { "selector": "title",    "text": "title",    "type": "string" },
+            { "selector": "subTitle", "text": "subTitle", "type": "string" },
+            { "selector": "mainStat", "text": "mainStat", "type": "string" },
+            { "selector": "arc__up",  "text": "arc__up",  "type": "number" },
+            { "selector": "arc__down","text": "arc__down","type": "number" }
+          ],
+          "filters": []
+        },
+        {
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "netman-infinity" },
+          "refId": "edges",
+          "type": "json", "source": "url",
+          "url": "http://localhost:8765/edges",
+          "url_options": { "method": "GET" },
+          "format": "table", "parser": "backend",
+          "columns": [
+            { "selector": "id",       "text": "id",       "type": "string" },
+            { "selector": "source",   "text": "source",   "type": "string" },
+            { "selector": "target",   "text": "target",   "type": "string" },
+            { "selector": "mainStat", "text": "mainStat", "type": "string" }
+          ],
+          "filters": []
+        }
+      ],
+      "title": "Network Topology",
+      "transformations": [],
+      "type": "nodeGraph"
+    }
+
+  ]
+}
