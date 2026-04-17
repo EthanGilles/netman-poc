@@ -46,8 +46,8 @@ jobs:
 
 
       # Configure routers
-      # - name: Configure routers
-      #   run: python3 src/main.py
+      - name: Configure routers
+        run: python3 src/main.py
 
 
       # Reload Prometheus and wait for scrape interval
